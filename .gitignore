@@ -1,3 +1,4 @@
 app_secrets.ini
 app_secrets.json
 *.xlsx
+*.pyc
