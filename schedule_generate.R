@@ -5,8 +5,8 @@ library(data.table)
 #  Other functions for loading in data
 #  And functions for running schedule_gen in parallel
 
-run_date <- "9132022"
-stochastic_output_folder <- "2022-2023 Sims v2"
+run_date <- "9222023"
+stochastic_output_folder <- "data/2023-2024_sims"
 number_of_sims <- 30000
 
 # Schedule Phelps only on Day 1 and Day 2
@@ -14,8 +14,7 @@ number_of_sims <- 30000
 
 # Predetermined Fall-Spring
 semester_fixed <- data.table(
-  Student = c("Ava Armbruster", "Cole Masters", "Eve Hinderliter", "Geoffrey Arone", 
-              "Lauren Eva", "Maile Krueger", "Makie Koizumi-Hachey"),
+  Student = c(""),
   Semester = rep("Fall Semester", times = 7),
   key = "Student"
 )
@@ -39,7 +38,12 @@ time[,Slot := paste(Day, Time, sep = "_")]
 
 # Import Data (see Conferences/R/data_extract.R)
 
-dt <- readRDS(file = paste0("./Output/conference_", run_date, ".rds")) %>% 
+# dt <- readRDS(file = paste0("./Output/conference_", run_date, ".rds")) %>% 
+#   data.table(., 
+#     key = c("Group", "GradeLevel", "Student", "Advisor", "Duration", "Teacher")
+#   )
+
+dt <- readRDS("./data/test1.rds")
   data.table(., 
     key = c("Group", "GradeLevel", "Student", "Advisor", "Duration", "Teacher")
   )

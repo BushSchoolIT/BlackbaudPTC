@@ -1,4 +1,8 @@
 app_secrets.ini
 app_secrets.json
+2023-2024_sims
+data/*
 *.xlsx
 *.pyc
+.Rhistory
+.vscode
