@@ -41,6 +41,9 @@ ce2 <- readxl::read_excel(
     Student = trimws(`Student List`)
   )
 
+
+# Advisor by Grade ==================
+
 abg <- readxl::read_excel(
   path = paste0("./Source/advisor_by_grade_", run_date, ".xlsx")
 )
@@ -121,6 +124,6 @@ output <- bind_rows(abg_ce_1, abg_ce_2) %>%
   ) %>% 
   arrange(Group, GradeLevel, Student, Duration)
 
-saveRDS(output, file = paste0("./Output/conference_", run_date, ".rds"))
-writexl::write_xlsx(output, path = paste0("./Output/conference_", run_date, ".xlsx"))
+saveRDS(output, file = paste0("./data/conference_", run_date, ".rds"))
+writexl::write_xlsx(output, path = paste0("./data/conference_", run_date, ".xlsx"))
 

@@ -6,7 +6,7 @@ library(data.table)
 #  And functions for running schedule_gen in parallel
 
 run_date <- "9222023"
-stochastic_output_folder <- "data/2023-2024_sims"
+stochastic_output_folder <- "2023-2024_sims"
 number_of_sims <- 30000
 
 # Schedule Phelps only on Day 1 and Day 2
@@ -31,19 +31,15 @@ full_schedule[,
     ordered = TRUE
   )
 ]
-setkeyv(full_schedule, c("Semester", "Day", "Time", "Room"))
+setkeyv(full_schedule, c("Semester", "Day", "Time", "Room")) 
 
 time <- unique(full_schedule[,.(Day, Time)], keyby = c("Day", "Time"))
 time[,Slot := paste(Day, Time, sep = "_")]
 
 # Import Data (see Conferences/R/data_extract.R)
-
-# dt <- readRDS(file = paste0("./Output/conference_", run_date, ".rds")) %>% 
-#   data.table(., 
-#     key = c("Group", "GradeLevel", "Student", "Advisor", "Duration", "Teacher")
-#   )
-
-dt <- readRDS("./data/test1.rds")
+# Loads data from data_extract.R
+# TO DO - FIX PATH
+dt <- readRDS(file = paste0("./data/conference_", run_date, ".rds")) %>% 
   data.table(., 
     key = c("Group", "GradeLevel", "Student", "Advisor", "Duration", "Teacher")
   )
@@ -481,7 +477,7 @@ schedule_gen <- function() {
 gen_parallel <- function(i) {
   schedule <- try(schedule_gen())
   saveRDS(schedule, file = 
-    paste0("./Output/", stochastic_output_folder, "/", i, ".rds" )
+    paste0("./data/", stochastic_output_folder, "/", i, ".rds" )
   )
 }
 
