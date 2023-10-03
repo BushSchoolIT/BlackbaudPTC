@@ -1,13 +1,13 @@
 library(tidyverse)
 library(data.table)
 
-run_date <- "9132022"
-stochastic_output_folder <- "2022-2023 Sims v2"
+run_date <- "10022023"
+stochastic_output_folder <- "2023-2024_sims"
 number_of_sims <- 30000
 
 # Import Data (see Conferences/R/data_extract.R)
 
-dt <- readRDS(file = paste0("./Output/conference_", run_date, ".rds")) %>% 
+dt <- readRDS(file = paste0("./data/conference_", run_date, ".rds")) %>% 
   data.table(., 
     key = c("GradeLevel", "Student", "Advisor", "Duration", "Teacher")
   )
@@ -15,18 +15,26 @@ dt <- readRDS(file = paste0("./Output/conference_", run_date, ".rds")) %>%
 students_to_schedule <- unique(dt[GradeLevel != "12th Grade", Student])
 
 semester_fixed <- data.table(
-  Student = c("Ava Armbruster", "Cole Masters", "Eve Hinderliter", "Geoffrey Arone", 
-              "Lauren Eva", "Maile Krueger", "Makie Koizumi-Hachey"),
-  Semester = rep("Fall Semester", times = 7),
+  Student = c("Ian Alberg", "Ahlam Alfedil", "Ahsenti Alfedil", "Charlie Alhadeff", 
+              "Lily Anderson", "Eli Brown-Rodriguez", "Gabriel Bryan", "Finn Corbett", "Riley Corbett",
+              "Jack Day Hase", "Nathaniel Day Hase", "Ace Ederer", "Darcey Edwards", "Helen Faber-Machacha",
+               "Duncan Frisbee-Smith", "Cameron Glaser", "Sam Grote", "Niko Harris", "Riley Harris", "Clement Hervet",
+               "Boyan Holt", "Caroline Holt", "Samuel Howard", "Hussien Hussien", "Nejat Hussien", "Liora Johansson",
+               "Dylan Kelly", "James Kelly", "Anna Kopstein", "Sophie Kopstein", "Madeleine Moe", "Rainer Moe", "Penelope Montufar",
+               "Jahyoo Pak", "Marco Perez", "Claire Pollock", "Amaya Priester", "Tucker Richmond", "Gus Schaible", "Maddie Schofield",
+               "Lauren Staiman","Xander Timmons", "Zachary Wintraub", "Lola Zedonis", "Waylon Zedonis", "Bruck Daniel", "Kirubel Daniel",
+               "Cass Fischer", "Elise Fischer", "Ellody Gillespie", "Tyra Gillespie", "Kate Hutchison", "Paul Hutchison", "Alex Lombardi", "Nicolai Lombardi",
+               "Avery Mai-Loi", "Rowan Mai-Loi", "Kiryn Merchant", "Samara Merchant", "Fiona Powell", "Izzie Powell", "Mia Raistakka", "Sofia Raistakka",
+               "Cooper Wray", "Kingston Wray"),
+  Semester = c(rep("Fall Semester", times = 45), rep("Spring Semester", times = 20)),
   key = "Student"
 )
 
 schedule_eval <- function(i) {
-  
   schedule <- readRDS(
-    file = paste0("./Output/", stochastic_output_folder, "/", i, ".rds" )
+    file = paste0("./data/", stochastic_output_folder, "/", i, ".rds" )
   )
-  
+
   # Tests for consistency & completeness ==================
   # at most 1 student per time & place
   cons_student <- schedule[,.(
@@ -35,12 +43,12 @@ schedule_eval <- function(i) {
   ),
     by = c("Semester", "Day", "Time", "Room")
   ][StudentCount > 1][,StudentCount := NULL]
-  
+
   # All students are scheduled
   missing_students <- setdiff(
-    students_to_schedule, schedule[!is.na(Student),unique(Student)]
+    students_to_schedule, schedule[!is.na(Student), unique(Student)]
   )
-  
+
   # at most 1 advisor per time
   cons_advisor <- schedule[,.(
     PlaceCount = n_distinct(Room),
@@ -48,10 +56,10 @@ schedule_eval <- function(i) {
   ),
     by = c("Advisor", "Semester", "Day", "Time")
   ][PlaceCount > 1][,PlaceCount := NULL]
-  
+
   # advisors are present
   students_missing_advisors <- schedule[!is.na(Student) & is.na(Advisor), Student]
-  
+
   # fixed_semester students correctly assigned
   semester_assigned_errors <- left_join(
     x = semester_fixed,
@@ -62,9 +70,9 @@ schedule_eval <- function(i) {
     summarize(
       StudentSemesterError = sapply(list(Student), toString)
     )
-  
+
   open_slots <- schedule[is.na(Student)]
-  
+
   conf_data <- dt[schedule,
     on = .(Advisor, Student),
     `:=` (
@@ -100,18 +108,18 @@ schedule_eval <- function(i) {
   
   #  fewer back-to-back in a day
   teacher_back2back_stats <- teacher_schedule[,`:=`(
-    Prior1 = 1*(lag(Time, n = 1L, default = -Inf) == Time - 1L),
-    Prior2 = 1*(lag(Time, n = 2L, default = -Inf) == Time - 2L),
-    Prior3 = 1*(lag(Time, n = 3L, default = -Inf) == Time - 3L),
-    Prior4 = 1*(lag(Time, n = 4L, default = -Inf) == Time - 4L),
-    Prior5 = 1*(lag(Time, n = 5L, default = -Inf) == Time - 5L),
-    Prior6 = 1*(lag(Time, n = 6L, default = -Inf) == Time - 6L),
-    Prior7 = 1*(lag(Time, n = 7L, default = -Inf) == Time - 7L),
-    Prior8 = 1*(lag(Time, n = 8L, default = -Inf) == Time - 8L),
-    Prior9 = 1*(lag(Time, n = 9L, default = -Inf) == Time - 9L),
-    Prior10 = 1*(lag(Time, n = 10L, default = -Inf) == Time - 10L),
-    Prior11 = 1*(lag(Time, n = 11L, default = -Inf) == Time - 11L),
-    Prior12 = 1*(lag(Time, n = 12L, default = -Inf) == Time - 12L)
+    Prior1 = 1*(lag(as.double(Time), n = 1L, default = -Inf) == Time - 1L),
+    Prior2 = 1*(lag(as.double(Time), n = 2L, default = -Inf) == Time - 2L),
+    Prior3 = 1*(lag(as.double(Time), n = 3L, default = -Inf) == Time - 3L),
+    Prior4 = 1*(lag(as.double(Time), n = 4L, default = -Inf) == Time - 4L),
+    Prior5 = 1*(lag(as.double(Time), n = 5L, default = -Inf) == Time - 5L),
+    Prior6 = 1*(lag(as.double(Time), n = 6L, default = -Inf) == Time - 6L),
+    Prior7 = 1*(lag(as.double(Time), n = 7L, default = -Inf) == Time - 7L),
+    Prior8 = 1*(lag(as.double(Time), n = 8L, default = -Inf) == Time - 8L),
+    Prior9 = 1*(lag(as.double(Time), n = 9L, default = -Inf) == Time - 9L),
+    Prior10 = 1*(lag(as.double(Time), n = 10L, default = -Inf) == Time - 10L),
+    Prior11 = 1*(lag(as.double(Time), n = 11L, default = -Inf) == Time - 11L),
+    Prior12 = 1*(lag(as.double(Time), n = 12L, default = -Inf) == Time - 12L)
   ),
     by = c("Teacher", "Semester", "Day")
   ][,.(
@@ -158,6 +166,7 @@ schedule_eval <- function(i) {
     by = c("Teacher", "Semester")
   ][,.(
     # 0 means uniform distribution, 1 = all meetings on one day
+    # changed a1 to 1
     ScaledKLDivergence = 1/log(3)*sum(MeetingPct*log(3*MeetingPct)) # 3 for 3 days, assumes uniform distribution
   ),
     by = c("Teacher", "Semester")
@@ -179,12 +188,12 @@ schedule_eval <- function(i) {
   # Advisor goodness
   #  fewer back-to-back in a day
   advisor_back2back_stats <- advisor_schedule[,`:=`(
-    Prior1 = 1*(lag(Time, n = 1L, default = -Inf) == Time - 1L),
-    Prior2 = 1*(lag(Time, n = 2L, default = -Inf) == Time - 2L),
-    Prior3 = 1*(lag(Time, n = 3L, default = -Inf) == Time - 3L),
-    Prior4 = 1*(lag(Time, n = 4L, default = -Inf) == Time - 4L),
-    Prior5 = 1*(lag(Time, n = 5L, default = -Inf) == Time - 5L),
-    Prior6 = 1*(lag(Time, n = 6L, default = -Inf) == Time - 6L)
+    Prior1 = 1*(lag(as.double(Time), n = 1L, default = -Inf) == Time - 1L),
+    Prior2 = 1*(lag(as.double(Time), n = 2L, default = -Inf) == Time - 2L),
+    Prior3 = 1*(lag(as.double(Time), n = 3L, default = -Inf) == Time - 3L),
+    Prior4 = 1*(lag(as.double(Time), n = 4L, default = -Inf) == Time - 4L),
+    Prior5 = 1*(lag(as.double(Time), n = 5L, default = -Inf) == Time - 5L),
+    Prior6 = 1*(lag(as.double(Time), n = 6L, default = -Inf) == Time - 6L)
   ),
     by = c("Advisor", "Semester", "Day")
   ][,.(
@@ -301,26 +310,30 @@ schedule_eval <- function(i) {
   )
 }
 
+# Run ==============================
 library(foreach)
 library(doParallel)
 cl <- parallel::makeCluster(8)
 registerDoParallel(cl)
 
 stats <- foreach(
-  i = seq(number_of_sims),
-  .packages = c("tidyverse", "data.table"),
-  .export = c("dt", "students_to_schedule"),
-  .errorhandling = "remove",
-  .combine = bind_rows,
-  .inorder = FALSE,
-  .multicombine = TRUE
+ i = seq(number_of_sims),
+ .packages = c("tidyverse", "data.table"),
+ .export = c("dt", "students_to_schedule"),
+ .errorhandling = "remove",
+ .combine = bind_rows,
+ .inorder = FALSE,
+ .multicombine = TRUE,
+ .verbose = FALSE
 ) %dopar% schedule_eval(i)
 
 parallel::stopCluster(cl)
 
+# Export ==============================
 writexl::write_xlsx(
+  print("Exporting..."),
   x = stats,
-  path = paste0("./Output/", stochastic_output_folder, "/eval_stats_", run_date, ".xlsx")
+  path = paste0("./data/", stochastic_output_folder, "/eval_stats_", run_date, ".xlsx")
 )
 
 

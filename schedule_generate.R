@@ -5,7 +5,7 @@ library(data.table)
 #  Other functions for loading in data
 #  And functions for running schedule_gen in parallel
 
-run_date <- "9222023"
+run_date <- "10022023"
 stochastic_output_folder <- "2023-2024_sims"
 number_of_sims <- 30000
 
@@ -14,8 +14,18 @@ number_of_sims <- 30000
 
 # Predetermined Fall-Spring
 semester_fixed <- data.table(
-  Student = c(""),
-  Semester = rep("Fall Semester", times = 7),
+  Student = c("Ian Alberg", "Ahlam Alfedil", "Ahsenti Alfedil", "Charlie Alhadeff", 
+              "Lily Anderson", "Eli Brown-Rodriguez", "Gabriel Bryan", "Finn Corbett", "Riley Corbett",
+              "Jack Day Hase", "Nathaniel Day Hase", "Ace Ederer", "Darcey Edwards", "Helen Faber-Machacha",
+               "Duncan Frisbee-Smith", "Cameron Glaser", "Sam Grote", "Niko Harris", "Riley Harris", "Clement Hervet",
+               "Boyan Holt", "Caroline Holt", "Samuel Howard", "Hussien Hussien", "Nejat Hussien", "Liora Johansson",
+               "Dylan Kelly", "James Kelly", "Anna Kopstein", "Sophie Kopstein", "Madeleine Moe", "Rainer Moe", "Penelope Montufar",
+               "Jahyoo Pak", "Marco Perez", "Claire Pollock", "Amaya Priester", "Tucker Richmond", "Gus Schaible", "Maddie Schofield",
+               "Lauren Staiman","Xander Timmons", "Zachary Wintraub", "Lola Zedonis", "Waylon Zedonis", "Bruck Daniel", "Kirubel Daniel",
+               "Cass Fischer", "Elise Fischer", "Ellody Gillespie", "Tyra Gillespie", "Kate Hutchison", "Paul Hutchison", "Alex Lombardi", "Nicolai Lombardi",
+               "Avery Mai-Loi", "Rowan Mai-Loi", "Kiryn Merchant", "Samara Merchant", "Fiona Powell", "Izzie Powell", "Mia Raistakka", "Sofia Raistakka",
+               "Cooper Wray", "Kingston Wray"),
+  Semester = c(rep("Fall Semester", times = 45), rep("Spring Semester", times = 20)),
   key = "Student"
 )
 

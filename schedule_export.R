@@ -1,12 +1,12 @@
 library(tidyverse)
 library(data.table)
 
-run_date <- "9132022"
-stochastic_output_folder <- "2022-2023 Sims v2"
+run_date <- "10022023"
+stochastic_output_folder <- "2023-2024_sims"
 
 # Import Data (see Conferences/R/data_extract.R)
 
-dt <- readRDS(file = paste0("./Output/conference_", run_date, ".rds")) %>% 
+dt <- readRDS(file = paste0("./data/conference_", run_date, ".rds")) %>% 
   data.table(., 
     key = c("GradeLevel", "Student", "Advisor", "Duration", "Teacher")
   )
@@ -33,7 +33,7 @@ dt[stu_par, on = "Group", Parent := i.Parent]
 
 export_schedule <- function(i) {
   schedule <- readRDS(
-    file = paste0("./Output/", stochastic_output_folder, "/", i, ".rds" )
+    file = paste0("./data/", stochastic_output_folder, "/", i, ".rds" )
   )
   
   conf_data <- dt[schedule,
@@ -104,9 +104,4 @@ export_schedule <- function(i) {
     writexl::write_xlsx(x = ., path = paste0(export_folder, "schedule_", i, ".xlsx"))
 }
 
-export_schedule(8310)
-export_schedule(18990)
-export_schedule(10980)
-export_schedule(23486)
-export_schedule(28650)
-export_schedule(14176)
+export_schedule(1058)

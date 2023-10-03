@@ -1,9 +1,9 @@
 library(tidyverse)
 library(data.table)
 
-run_date <- "9132022"
-semester1 <- "fall_2022"
-semester2 <- "spring_2023"
+run_date <- "10022023"
+semester1 <- "fall_2023"
+semester2 <- "spring_2024"
 
 # Student Parent ==================
 
@@ -33,6 +33,7 @@ ce1 <- readxl::read_excel(
     Student = trimws(`Student List`)
   )
 
+# changed muta to mutate
 ce2 <- readxl::read_excel(
   path = paste0("./Source/course_enrollments_", semester2, "_", run_date, ".xlsx")
 ) %>% 
